@@ -182,9 +182,9 @@
         </el-form-item>
 
         <el-form-item label="单元门禁" :label-width="formLabelWidth">
-          <el-select v-model="residentValue" placeholder="请选择">
+          <el-select v-model="unitGuardValue" clearable multiple placeholder="请选择">
             <el-option
-              v-for="item in residentOptions"
+              v-for="item in unitGuardOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -195,9 +195,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
     </el-dialog>
   </d2-container>
@@ -219,6 +217,26 @@ export default {
         {
           value: "选项2",
           label: "张小花"
+        }
+      ],
+      //单元门禁
+      unitGuardValue:[],
+      unitGuardOptions: [
+        {
+          value: "选项1",
+          label: "第1栋1单元"
+        },
+        {
+          value: "选项2",
+          label: "第2栋1单元"
+        },
+        {
+          value: "选项3",
+          label: "第3栋1单元"
+        },
+        {
+          value: "选项4",
+          label: "第4栋1单元"
         }
       ],
       // 授权选项的值

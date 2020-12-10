@@ -50,14 +50,14 @@
             header-align="center"
             align="center"
             type="selection"
-            width="55"
+            width="25"
           >
           </el-table-column>
           <el-table-column
             header-align="center"
             align="center"
             label="序列号"
-            width="55"
+            width="50"
           >
             <template slot-scope="scope">{{ scope.row.date }}</template>
           </el-table-column>
@@ -66,13 +66,13 @@
             align="center"
             prop="name"
             label="居民姓名"
-            width="55"
+            width="35"
           >
           </el-table-column>
           <el-table-column
             prop="address"
             label="身份证号"
-            width="150"
+            width="120"
             header-align="center"
             align="center"
           >
@@ -81,7 +81,7 @@
             header-align="center"
             align="center"
             label="证件照片"
-            width="55"
+            width="35"
           >
             <template slot-scope="scope">
               <el-popover placement="top-start" title="" trigger="hover">
@@ -98,7 +98,7 @@
             header-align="center"
             align="center"
             label="证件照片"
-            width="55"
+            width="35"
           >
             <template slot-scope="scope">
               <el-popover placement="top-start" title="" trigger="hover">
@@ -115,26 +115,27 @@
             header-align="center"
             align="center"
             label="性别"
-            width="55"
+            width="35"
           >
-           <template slot-scope="scope">
-                <span v-if="scope.row.gender == 0" >女</span>
-                <span v-if="scope.row.gender == 1" >男</span>
-           </template>
+            <template slot-scope="scope">
+              <span v-if="scope.row.gender == 0">女</span>
+              <span v-if="scope.row.gender == 1">男</span>
+            </template>
           </el-table-column>
           <el-table-column
             header-align="center"
             align="center"
             prop="checkStatus"
             label="审核状态"
-            width="55"
+            width="35"
           >
           </el-table-column>
           <el-table-column
+            min-width="200"
             header-align="center"
             align="center"
             label="操作"
-            width="200"
+            width="210"
           >
             <template slot-scope="scope">
               <el-button
@@ -180,12 +181,12 @@
     </el-card>
 
     <!-- 弹出区域 -->
-    <el-dialog width="40%" title="新增人员" :visible.sync="dialogFormVisible">
-      <el-form :inline="true" :model="form">
-        <el-form-item label="姓名" :label-width="formLabelWidth">
+    <el-dialog width="50%" title="新增人员" :visible.sync="dialogFormVisible">
+      <el-form  ref="addMembersForm" :inline="true" :model="addMembersForm">
+        <el-form-item prop="name" label="姓名" :label-width="formLabelWidth">
           <el-input
             maxlength="4"
-            v-model="form.name"
+            v-model="addMembersForm.name"
             placeholder="请输入"
             autocomplete="off"
           ></el-input>
@@ -198,10 +199,19 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
+        <el-form-item
+          label="手机号码"
+          :label-width="formLabelWidth"
+          prop="phoneNumber"
+          :rules="[
+            { required: true, message: '手机号码不能为空' },
+            { type: 'number', message: '手机号码必须为数字值' }
+          ]"
+        >
           <el-input
+           type="phoneNumber"
             maxlength="11"
-            v-model="form.name"
+            v-model.number="addMembersForm.phoneNumber"
             placeholder="请输入"
             autocomplete="off"
           ></el-input>
@@ -210,7 +220,7 @@
         <el-form-item label="身份证号码" :label-width="formLabelWidth">
           <el-input
             maxlength="11"
-            v-model="form.name"
+            v-model="addMembersForm.idNumber"
             placeholder="请输入"
             autocomplete="off"
           ></el-input>
@@ -218,7 +228,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false"
+        <el-button type="primary" @click="submitaMembersForm('addMembersForm')"
           >确 定</el-button
         >
       </div>
@@ -272,15 +282,10 @@ export default {
       ],
       dialogTableVisible: false,
       dialogFormVisible: false,
-      form: {
+      addMembersForm: {
         name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
+        phoneNumber: null,
+        idNumber: null,
       },
       formLabelWidth: "120px",
 
@@ -341,13 +346,25 @@ export default {
   methods: {
     onSubmitStatus() {
       console.log("提交:", this.value);
+    },
+    // 新增人员信息弹窗的提交
+    submitaMembersForm(formData){
+      this.$refs[formData].validate((valid)=>{
+        if(valid){
+          console.log(formData);
+          this.dialogFormVisible = false
+        }else{
+          console.log('erro');
+          return false
+        }
+      })
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.breadcrumb{
+.breadcrumb {
   margin: 0 0 20px 0;
 }
 
