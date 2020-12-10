@@ -64,6 +64,15 @@
           <el-table-column
             header-align="center"
             align="center"
+            label="id"
+            width="50"
+          >
+            <template slot-scope="scope">{{ scope.row.id }}</template>
+          </el-table-column>
+
+          <el-table-column
+            header-align="center"
+            align="center"
             prop="name"
             label="居民姓名"
             width="35"
@@ -85,11 +94,11 @@
           >
             <template slot-scope="scope">
               <el-popover placement="top-start" title="" trigger="hover">
-                <img src="./2.jpg" alt="" style="width: 150px;height: 150px" />
+                <img src="./2.jpg" alt="" style="width: 150px; height: 150px" />
                 <img
                   slot="reference"
                   src="./2.jpg"
-                  style="width: 30px;height: 30px"
+                  style="width: 30px; height: 30px"
                 />
               </el-popover>
             </template>
@@ -102,11 +111,11 @@
           >
             <template slot-scope="scope">
               <el-popover placement="top-start" title="" trigger="hover">
-                <img src="./1.jpg" alt="" style="width: 150px;height: 150px" />
+                <img src="./1.jpg" alt="" style="width: 150px; height: 150px" />
                 <img
                   slot="reference"
                   src="./1.jpg"
-                  style="width: 30px;height: 30px"
+                  style="width: 30px; height: 30px"
                 />
               </el-popover>
             </template>
@@ -142,33 +151,33 @@
                 @click="handleClick(scope.row)"
                 type="danger"
                 size="mini"
-                style="margin:0"
+                style="margin: 0"
                 icon="el-icon-delete"
                 >删除</el-button
               >
               <el-button
-                style="margin:0"
+                style="margin: 0"
                 type="primary"
                 size="mini"
                 icon="el-icon-edit"
                 >修改</el-button
               >
               <el-button
-                style="margin:0"
+                style="margin: 0"
                 type="primary"
                 size="mini"
                 icon="el-icon-edit"
                 >绑定房屋</el-button
               >
               <el-button
-                style="margin:0"
+                style="margin: 0"
                 type="primary"
                 size="mini"
                 icon="el-icon-edit"
                 >解绑</el-button
               >
               <el-button
-                style="margin:0"
+                style="margin: 0"
                 type="danger"
                 size="mini"
                 icon="el-icon-delete"
@@ -182,7 +191,7 @@
 
     <!-- 弹出区域 -->
     <el-dialog width="50%" title="新增人员" :visible.sync="dialogFormVisible">
-      <el-form  ref="addMembersForm" :inline="true" :model="addMembersForm">
+      <el-form ref="addMembersForm" :inline="true" :model="addMembersForm">
         <el-form-item prop="name" label="姓名" :label-width="formLabelWidth">
           <el-input
             maxlength="4"
@@ -193,9 +202,9 @@
         </el-form-item>
 
         <el-form-item label="选择性别" :label-width="formLabelWidth">
-          <el-radio-group v-model="radio">
-            <el-radio :label="3">男</el-radio>
-            <el-radio :label="6">女</el-radio>
+          <el-radio-group v-model="addMembersForm.gender">
+            <el-radio :label="1">男</el-radio>
+            <el-radio :label="0">女</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -205,11 +214,11 @@
           prop="phoneNumber"
           :rules="[
             { required: true, message: '手机号码不能为空' },
-            { type: 'number', message: '手机号码必须为数字值' }
+            { type: 'number', message: '手机号码必须为数字值' },
           ]"
         >
           <el-input
-           type="phoneNumber"
+            type="phoneNumber"
             maxlength="11"
             v-model.number="addMembersForm.phoneNumber"
             placeholder="请输入"
@@ -220,7 +229,7 @@
         <el-form-item label="身份证号码" :label-width="formLabelWidth">
           <el-input
             maxlength="11"
-            v-model="addMembersForm.idNumber"
+            v-model="addMembersForm.address"
             placeholder="请输入"
             autocomplete="off"
           ></el-input>
@@ -238,128 +247,59 @@
 
 <script>
 import log from "@/plugin/log";
+import { v4 as uuidv4 } from 'uuid'
 export default {
   data() {
     return {
-      radio: 3,
       options: [
         {
           value: "选项1",
-          label: "无效"
+          label: "无效",
         },
         {
           value: "选项2",
-          label: "有效"
-        }
+          label: "有效",
+        },
       ],
       value: "",
-
-      gridData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男"
-        }
-      ],
       dialogTableVisible: false,
       dialogFormVisible: false,
       addMembersForm: {
         name: "",
         phoneNumber: null,
-        idNumber: null,
+        address: null,
+        gender: 1,
       },
       formLabelWidth: "120px",
-
-      tableData: [
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: 1,
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: 1,
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小花",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: 0,
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: 1,
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-08",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: 1,
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-06",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: 1,
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-07",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: 1,
-          checkStatus: "已通过审核"
-        }
-      ],
-      multipleSelection: []
+      multipleSelection: [],
     };
   },
+  computed:{
+     tableData(){
+       return this.$store.state.users.data
+     }
+  },
+
   methods: {
     onSubmitStatus() {
       console.log("提交:", this.value);
     },
     // 新增人员信息弹窗的提交
-    submitaMembersForm(formData){
-      this.$refs[formData].validate((valid)=>{
-        if(valid){
-          console.log(formData);
-          this.dialogFormVisible = false
-        }else{
-          console.log('erro');
-          return false
+    submitaMembersForm(formData) {
+      this.$refs[formData].validate((valid) => {
+        if (valid) {
+          console.log('数据',this.addMembersForm);
+          const id = uuidv4().replace(/\-/g,'')
+          this.addMembersForm.id = id;
+          this.$store.commit('users/changeData',this.addMembersForm)
+          this.dialogFormVisible = false;
+        } else {
+          console.log("erro");
+          return false;
         }
-      })
-    }
-  }
+      });
+    },
+  },
 };
 </script>
 

@@ -138,12 +138,12 @@
     <el-dialog width="50%" title="授权" :visible.sync="dialogFormVisible">
       <el-form :inline="true" :model="form">
         <el-form-item label="居民" :label-width="formLabelWidth">
-          <el-select v-model="residentValue" placeholder="请选择居民">
+          <el-select v-model="form.id" placeholder="请选择居民">
             <el-option
-              v-for="item in residentOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="item in tableData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             >
             </el-option>
           </el-select>
@@ -158,7 +158,7 @@
         </el-form-item>
 
         <el-form-item label="卡编号" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.numbering" autocomplete="off"></el-input>
         </el-form-item>
 
         <el-form-item label="" :label-width="formLabelWidth">
@@ -166,7 +166,7 @@
             <el-option label="区域一" value="shanghai"></el-option>
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
-          <el-button type="primary">读取</el-button>
+          <el-button type="primary" @click="handleAll">读取</el-button>
         </el-form-item>
 
         <el-form-item label="出入口门禁" :label-width="formLabelWidth">
@@ -182,7 +182,7 @@
         </el-form-item>
 
         <el-form-item label="单元门禁" :label-width="formLabelWidth">
-          <el-select v-model="unitGuardValue" clearable multiple placeholder="请选择">
+          <el-select @change="onChange" v-model="unitGuardValue" clearable multiple placeholder="请选择">
             <el-option
               v-for="item in unitGuardOptions"
               :key="item.value"
@@ -195,7 +195,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="confirm">确 定</el-button>
       </div>
     </el-dialog>
   </d2-container>
@@ -209,16 +209,6 @@ export default {
       radio: 3,
       // 居民选项的值
       residentValue: "",
-      residentOptions: [
-        {
-          value: "选项1",
-          label: "王二狗"
-        },
-        {
-          value: "选项2",
-          label: "张小花"
-        }
-      ],
       //单元门禁
       unitGuardValue:[],
       unitGuardOptions: [
@@ -292,65 +282,37 @@ export default {
         delivery: false,
         type: [],
         resource: "",
-        desc: ""
+        desc: "",
+        id:'',
+        numbering:'',
       },
       formLabelWidth: "120px",
-
-      tableData: [
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男",
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男",
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男",
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          gender: "男",
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-08",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-06",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          checkStatus: "已通过审核"
-        },
-        {
-          date: "2016-05-07",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          checkStatus: "已通过审核"
-        }
-      ],
       multipleSelection: []
     };
+  },
+  computed:{
+     tableData(){
+       return this.$store.state.users.data
+     }
   },
   methods: {
     onSubmitStatus() {
       console.log("提交:", this.value);
+    },
+    confirm(){
+      this.dialogFormVisible = false
+      console.log(this.form)
+      this.$store.commit('users/addNumbering', this.form)
+    },
+    onChange(){
+      console.log(this.unitGuardValue);
+    },
+    handleAll(){
+      this.unitGuardOptions.forEach(res => {
+        this.unitGuardValue.push(res.value)
+      })
     }
+    
   }
 };
 </script>
