@@ -341,7 +341,7 @@ export default {
           date: "2016-05-07",
           name: "王小虎",
           address: "上海市普陀区金沙江路 1518 弄",
-          checkStatus: "已通过审核"
+          checkStatus: "未通过审核"
         }
       ],
       multipleSelection: []
