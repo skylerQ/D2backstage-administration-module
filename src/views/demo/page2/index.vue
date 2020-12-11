@@ -30,6 +30,7 @@
           ></el-button>
         </div>
       </div>
+
       <div class="text item">
         <el-button
           type="warning"
@@ -39,6 +40,7 @@
         >
 
         <el-table
+          size="small"
           border
           ref="multipleTable"
           :data="tableData"
@@ -57,7 +59,7 @@
             header-align="center"
             align="center"
             label="序列号"
-            width="50"
+            width="35"
           >
             <template slot-scope="scope">{{ scope.row.date }}</template>
           </el-table-column>
@@ -72,7 +74,7 @@
           <el-table-column
             prop="address"
             label="身份证号"
-            width="120"
+            width="100"
             header-align="center"
             align="center"
           >
@@ -115,7 +117,7 @@
             header-align="center"
             align="center"
             label="性别"
-            width="35"
+            width="25"
           >
             <template slot-scope="scope">
               <span v-if="scope.row.gender == 0">女</span>
@@ -130,49 +132,70 @@
             width="35"
           >
           </el-table-column>
+          <!-- 门禁卡状态 -->
           <el-table-column
-            min-width="200"
+            min-width="55"
+            header-align="center"
+            align="center"
+            label="门禁"
+            width="55"
+          >
+            <template slot-scope="scope">
+              <!-- <el-button
+                @click="handleDoorClick(scope.row)"
+                type="danger"
+                size="mini"
+                icon="el-icon-delete"
+                >删除</el-button> -->
+              <el-popover
+                placement="top"
+                width="360"
+                height="360"
+                v-model="visible"
+              >
+                <div >
+                   <el-input style="padding-top:25" v-model="input" placeholder="请输入内容"></el-input>
+                </div>
+                
+                <div style="text-align: right; margin: 0">
+                  <el-button size="mini" type="text" @click="visible = false"
+                    >取消</el-button
+                  >
+                  <el-button type="primary" size="mini" @click="visible = false"
+                    >确定</el-button
+                  >
+                </div>
+                <el-button slot="reference" type="success" plain size="mini"
+                  >修改</el-button
+                >
+              </el-popover>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            min-width="150"
             header-align="center"
             align="center"
             label="操作"
-            width="210"
+            width="150"
           >
             <template slot-scope="scope">
               <el-button
                 @click="handleClick(scope.row)"
                 type="danger"
                 size="mini"
-                style="margin:0"
                 icon="el-icon-delete"
                 >删除</el-button
               >
-              <el-button
-                style="margin:0"
-                type="primary"
-                size="mini"
-                icon="el-icon-edit"
+              <el-button type="primary" size="mini" icon="el-icon-edit"
                 >修改</el-button
               >
               <el-button
-                style="margin:0"
                 type="primary"
                 size="mini"
                 icon="el-icon-edit"
-                >绑定房屋</el-button
-              >
-              <el-button
-                style="margin:0"
-                type="primary"
-                size="mini"
-                icon="el-icon-edit"
-                >解绑</el-button
-              >
-              <el-button
-                style="margin:0"
-                type="danger"
-                size="mini"
-                icon="el-icon-delete"
-                >迁出</el-button
+                @click="authorizationBtn"
+                >授权</el-button
               >
             </template>
           </el-table-column>
@@ -182,7 +205,7 @@
 
     <!-- 弹出区域 -->
     <el-dialog width="50%" title="新增人员" :visible.sync="dialogFormVisible">
-      <el-form  ref="addMembersForm" :inline="true" :model="addMembersForm">
+      <el-form ref="addMembersForm" :inline="true" :model="addMembersForm">
         <el-form-item prop="name" label="姓名" :label-width="formLabelWidth">
           <el-input
             maxlength="4"
@@ -209,7 +232,7 @@
           ]"
         >
           <el-input
-           type="phoneNumber"
+            type="phoneNumber"
             maxlength="11"
             v-model.number="addMembersForm.phoneNumber"
             placeholder="请输入"
@@ -233,6 +256,82 @@
         >
       </div>
     </el-dialog>
+
+    <!-- 授权弹出区域 -->
+    <el-dialog
+      width="50%"
+      title="授权"
+      :visible.sync="authorizationFormVisible"
+    >
+      <el-form :inline="true" :model="form">
+        <el-form-item label="居民" :label-width="formLabelWidth">
+          <el-select v-model="form.id" placeholder="请选择居民">
+            <el-option
+              v-for="item in residentOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="授权方式" :label-width="formLabelWidth">
+          <el-radio-group v-model="radio">
+            <el-radio :label="3">人脸</el-radio>
+            <el-radio :label="6">门禁卡</el-radio>
+            <el-radio :label="9">门禁卡+人脸</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="卡编号" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="" :label-width="formLabelWidth">
+          <el-select v-model="form.region" placeholder="请选择">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+          <el-button type="primary">读取</el-button>
+        </el-form-item>
+
+        <el-form-item label="出入口门禁" :label-width="formLabelWidth">
+          <el-select v-model="residentValue" placeholder="请选择">
+            <el-option
+              v-for="item in residentOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="单元门禁" :label-width="formLabelWidth">
+          <el-select
+            v-model="unitGuardValue"
+            clearable
+            multiple
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in unitGuardOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="authorizationFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="authorizationFormVisible = false"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
   </d2-container>
 </template>
 
@@ -241,6 +340,40 @@ import log from "@/plugin/log";
 export default {
   data() {
     return {
+      input3: "",
+      select: "",
+      // 居民选项的值
+      residentValue: "",
+      residentOptions: [
+        {
+          value: "选项1",
+          label: "王二狗"
+        },
+        {
+          value: "选项2",
+          label: "张小花"
+        }
+      ],
+      //单元门禁
+      unitGuardValue: [],
+      unitGuardOptions: [
+        {
+          value: "选项1",
+          label: "第1栋1单元"
+        },
+        {
+          value: "选项2",
+          label: "第2栋1单元"
+        },
+        {
+          value: "选项3",
+          label: "第3栋1单元"
+        },
+        {
+          value: "选项4",
+          label: "第4栋1单元"
+        }
+      ],
       radio: 3,
       options: [
         {
@@ -282,12 +415,24 @@ export default {
       ],
       dialogTableVisible: false,
       dialogFormVisible: false,
+      authorizationFormVisible: false,
       addMembersForm: {
         name: "",
         phoneNumber: null,
-        idNumber: null,
+        idNumber: null
       },
       formLabelWidth: "120px",
+      form: {
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: "",
+        id: ""
+      },
 
       tableData: [
         {
@@ -348,22 +493,38 @@ export default {
       console.log("提交:", this.value);
     },
     // 新增人员信息弹窗的提交
-    submitaMembersForm(formData){
-      this.$refs[formData].validate((valid)=>{
-        if(valid){
+    submitaMembersForm(formData) {
+      this.$refs[formData].validate(valid => {
+        if (valid) {
           console.log(formData);
-          this.dialogFormVisible = false
-        }else{
-          console.log('erro');
-          return false
+          this.dialogFormVisible = false;
+        } else {
+          console.log("erro");
+          return false;
         }
-      })
+      });
+    },
+
+    // 表格多选发生变化
+    handleSelectionChange() {},
+
+    // 点击了修改门禁
+    handleDoorClick(data) {
+      console.log(data);
+    },
+
+    //表格 - 操作 -授权按钮
+    authorizationBtn() {
+      this.authorizationFormVisible = true;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.el-select .el-input {
+  width: 100px;
+}
 .breadcrumb {
   margin: 0 0 20px 0;
 }
