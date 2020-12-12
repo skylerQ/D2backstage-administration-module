@@ -52,6 +52,7 @@
 
         <el-table
           border
+          size="small"
           ref="multipleTable"
           :data="tableData"
           tooltip-effect="dark"
@@ -198,6 +199,7 @@
         <el-button type="primary" @click="confirm">确 定</el-button>
       </div>
     </el-dialog>
+     
   </d2-container>
 </template>
 
