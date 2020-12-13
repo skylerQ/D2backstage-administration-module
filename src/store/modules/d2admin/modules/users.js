@@ -5,25 +5,33 @@ const state = {
     date: '2016-05-02',
     name: '王小虎',
     address: '上海市普陀区金沙江路 1518 弄',
+    gender:1,
+    status:0,
     accessControl: {
       name: 'yu'
     }
   }, {
     id: 2,
     date: '2016-05-04',
-    name: '王小虎',
+    name: '张小花',
     address: '上海市普陀区金沙江路 1517 弄',
+    gender:0,
+    status:0,
     accessControl: { name: 'yu', entrance: [] }
   }, {
     id: 3,
     date: '2016-05-01',
-    name: '王小虎',
+    name: '李小璐',
+    gender:0,
+    status:0,
     address: '上海市普陀区金沙江路 1519 弄',
     accessControl: { name: 'yu', entrance: [] }
   }, {
     id: 4,
     date: '2016-05-03',
-    name: '王小虎',
+    name: '王晓飞',
+    gender:1,
+    status:1,
     address: '上海市普陀区金沙江路 1516 弄',
     accessControl: { entrance: [], name: 'yu', key: false, numbering: '9527' }
   }],

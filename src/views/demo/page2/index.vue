@@ -97,11 +97,11 @@
             <template slot-scope="scope">
               <el-popover placement="top-start" title="" trigger="hover">
                 <img src="./2.jpg" alt="" style="width: 150px; height: 150px" />
-                <!-- <img
+                <img
                   slot="reference"
                   src="./2.jpg"
                   style="width: 30px; height: 30px"
-                /> -->
+                />
               </el-popover>
             </template>
           </el-table-column>
@@ -124,6 +124,27 @@
             width="35"
           >
           </el-table-column>
+
+          <el-table-column
+            prop="status"
+            label="标签"
+            width="100"
+            :filters="[
+              { text: '有效', value: 1 },
+              { text: '无效', value: 0 }
+            ]"
+            :filter-method="filterStatus"
+            filter-placement="bottom-end"
+          >
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.tag === '家' ? 'primary' : 'success'"
+                disable-transitions
+                > {{`${scope.row.status>0?'有效':'无效'}`}} </el-tag
+              >
+            </template>
+          </el-table-column>
+
           <!-- 门禁卡状态 -->
           <el-table-column
             min-width="55"
@@ -212,12 +233,17 @@
 
     <!-- 弹出区域 -->
     <el-dialog width="50%" title="新增人员" :visible.sync="dialogFormVisible">
-      <el-form ref="addMembersForm" :inline="true" :model="addMembersForm">
+      <el-form
+        ref="addMembersForm"
+        :rules="rule"
+        :inline="true"
+        :model="addMembersForm"
+      >
         <el-form-item prop="name" label="姓名" :label-width="formLabelWidth">
           <el-input
-            maxlength="4"
+            maxlength="5"
             v-model="addMembersForm.name"
-            placeholder="请输入"
+            placeholder="请输入姓名"
             autocomplete="off"
           ></el-input>
         </el-form-item>
@@ -233,10 +259,6 @@
           label="手机号码"
           :label-width="formLabelWidth"
           prop="phoneNumber"
-          :rules="[
-            { required: true, message: '手机号码不能为空' },
-            { type: 'number', message: '手机号码必须为数字值' },
-          ]"
         >
           <el-input
             type="phoneNumber"
@@ -247,10 +269,14 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="身份证号码" :label-width="formLabelWidth">
+        <el-form-item
+          label="身份证号码"
+          :label-width="formLabelWidth"
+          prop="idNumber"
+        >
           <el-input
-            maxlength="11"
-            v-model="addMembersForm.address"
+            maxlength="18"
+            v-model="addMembersForm.idNumber"
             placeholder="请输入"
             autocomplete="off"
           ></el-input>
@@ -341,37 +367,71 @@ import { v4 as uuidv4 } from "uuid";
 export default {
   data() {
     return {
+      // 表单验证
+      rule: {
+        name: [
+          { required: true, message: "请输入姓名" },
+          {
+            min: 2,
+            max: 10,
+            message: "长度在 2 到 10 个字符"
+          },
+          {
+            required: true,
+            pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9.·-]+$/,
+            message: "姓名不支持特殊字符"
+          }
+        ],
+        phoneNumber: [
+          { required: true, message: "请输入手机号码", trigger: "blur" },
+          {
+            required: true,
+            pattern: /^((13|14|15|16|17|18)[0-9]{1}\d{8})|((166|199|198)[0-9]{1}\d{7})$/,
+            message: "请输入正确的手机号码"
+          }
+        ],
+        idNumber: [
+          { required: true, message: "请输入身份证号", trigger: "blur" },
+          { min: 15, max: 18, message: "请填写18位号码" },
+          {
+            required: true,
+            pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,
+            message: "请输入正确的身份证号码"
+          }
+        ]
+      },
+
       // cardVisible: false,
       // 门禁卡信息
       cardForm: {
         id: "",
         cardNumber: "",
-        cardType: "",
+        cardType: ""
       },
       cardValue: "",
       cardOptions: [
         {
           value: "1",
-          label: "IC卡1",
+          label: "IC卡1"
         },
         {
           value: "2",
-          label: "IC卡2",
+          label: "IC卡2"
         },
         {
           value: "3",
-          label: "IC卡3",
-        },
+          label: "IC卡3"
+        }
       ],
       options: [
         {
           value: "选项1",
-          label: "无效",
+          label: "无效"
         },
         {
           value: "选项2",
-          label: "有效",
-        },
+          label: "有效"
+        }
       ],
       value: "",
       dialogTableVisible: false,
@@ -382,6 +442,7 @@ export default {
         phoneNumber: null,
         address: null,
         gender: 1,
+        idNumber: ""
       },
       formLabelWidth: "120px",
       multipleSelection: [],
@@ -390,8 +451,8 @@ export default {
         name: "",
         region: 1,
         entrance: [],
-        unit2: [],
-      },
+        unit2: []
+      }
     };
   },
   computed: {
@@ -400,13 +461,17 @@ export default {
     },
     address() {
       return this.$store.state.users.address;
-    },
+    }
   },
 
   methods: {
+    //表格中筛选门禁状态
+    filterStatus(value, row) {
+        return row.status === value;
+      },
     btn() {
       // console.log(this.cardVisible = false);
-      this.$nextTick((res) => {
+      this.$nextTick(res => {
         this.cardVisible = false;
       });
     },
@@ -425,11 +490,11 @@ export default {
     handleSelectionChange() {},
 
     //提交授权
-    submitAuthorizationForm(){
-       this.authorizationFormVisible = false
-       console.log(this.authorizationForm);
-       this.$store.commit('users/authorizationForm',this.authorizationForm)
-       this.authorizationForm = {}
+    submitAuthorizationForm() {
+      this.authorizationFormVisible = false;
+      console.log(this.authorizationForm);
+      this.$store.commit("users/authorizationForm", this.authorizationForm);
+      this.authorizationForm = {};
     },
 
     // 点击了修改门禁
@@ -446,7 +511,7 @@ export default {
     },
     // 新增人员信息弹窗的提交
     submitaMembersForm(formData) {
-      this.$refs[formData].validate((valid) => {
+      this.$refs[formData].validate(valid => {
         if (valid) {
           console.log("数据", this.addMembersForm);
           const id = uuidv4().replace(/\-/g, "");
@@ -458,8 +523,8 @@ export default {
           return false;
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

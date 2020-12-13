@@ -16,12 +16,29 @@
     </el-row>
 
     <el-popover placement="top" width="160" v-model="visible1">
-      <p>这是一段内容这是一段内容确定删除吗？</p>
+      <el-input
+        style="margin-bottom: 15px"
+        v-model="cardForm.cardNumber"
+        placeholder="门禁卡编号"
+      ></el-input>
+      <el-select
+        style="margin-bottom: 15px"
+        v-model="cardForm.cardType"
+        placeholder="请选择卡种"
+      >
+        <el-option
+          v-for="item in cardOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        >
+        </el-option>
+      </el-select>
       <div style="text-align: right; margin: 0">
         <el-button size="mini" type="text" @click="visible1 = false"
           >取消</el-button
         >
-        <el-button type="primary" size="mini" @click="visible1= false"
+        <el-button type="primary" size="mini" @click="visible1 = false"
           >确定</el-button
         >
       </div>
@@ -31,18 +48,39 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        visible1: false,
-      };
-    },
-    methods: {
-      btn(){
-        console.log(this.visible1);
-      }
+export default {
+  data() {
+    return {
+      visible1: false,
+      // 门禁卡信息
+      cardForm: {
+        id: "",
+        cardNumber: "",
+        cardType: "",
+      },
+      cardValue: "",
+      cardOptions: [
+        {
+          value: "1",
+          label: "IC卡1",
+        },
+        {
+          value: "2",
+          label: "IC卡2",
+        },
+        {
+          value: "3",
+          label: "IC卡3",
+        },
+      ],
+    };
+  },
+  methods: {
+    btn() {
+      console.log(this.visible1);
     }
   }
+};
 </script>
 
 <style lang="scss" scoped>
